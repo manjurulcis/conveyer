@@ -14,7 +14,7 @@ class Worker:
         
         return False
     
-    def writeWorkerData(self, component, beltPosition):
+    def setWorkerData(self, component, beltPosition):
         if self.handOne == '' and self.handTwo != component:
             self.handOne = component
         elif self.handTwo == '' and self.handOne != component:
@@ -42,7 +42,6 @@ w_3 = Worker()
 workers = [w1, w2, w3, w_1, w_2, w_3]
 
 belt_products = []
-
 belt_input = ['A', 'B', '']
 belt_items = []
 i = 0
@@ -51,10 +50,9 @@ def findNextAvailableWorker(workers, component):
     for worker in workers:
         writeState = False
         if worker != None and worker.isHandFull() == False and component != '':
-            worker.writeWorkerData(component, i) 
+            worker.setWorkerData(component, i) 
             writeState = worker.isHandFull()
         if (writeState):
-            print('TT', worker.beltPosition, worker.handOne, worker.handTwo, worker.finishedProduct, i)
             return worker
     return False    
 
@@ -62,17 +60,18 @@ def assembleProductAndReturnInBelt(currentBeltIndex, belt_products):
     for worker in workers:
         #dump(worker)
         if worker.finishedProduct == 1 and currentBeltIndex >= worker.beltPosition + 3:
-            #belt_items[currentBeltIndex] = 'P'
+            belt_items[currentBeltIndex] = 'P'
             w = copy.copy(worker)
             belt_products.append(w)
             worker.reset()
+            print('TT', w.beltPosition, w.handOne, w.handTwo, w.finishedProduct)
             break
         
 def dump(obj):
   for attr in dir(obj):
     print("obj.%s = %r" % (attr, getattr(obj, attr)))  
          
-while i < 15:
+while i < 10:
     component = belt_input[random.randint(0, 2)]
     belt_items.append(component)
     if (component != ''):
@@ -92,8 +91,6 @@ while i < 15:
     # print('w4...,,w5.....w6')
     i += 1
     
-for w in workers:
-    print(w.beltPosition, w.handOne, w.handTwo, w.finishedProduct)
 print(belt_items)
 for w in belt_products:
     print(w.beltPosition, w.handOne, w.handTwo, w.finishedProduct) 
