@@ -8,12 +8,9 @@ import random
 import copy
 from worker import Worker 
 
-
 workers = []                # holds the list of workers
 belt_input = ['A', 'B', ''] # defines the source of elements in the belt
-finished_products = []      # holds the finished/assembled products
 belt_items = []             # holds list of items in the belt
-
 
 def find_next_available_worker(workers, component, i):
     """Checks which worker is available to pick the component or return the finished product"""
@@ -32,7 +29,7 @@ def find_next_available_worker(workers, component, i):
     return False      
 
 
-def assemble_and_retrun_in_belt(current_belt_index, finished_products, workers):
+def assemble_and_retrun_in_belt(current_belt_index, workers):
     """Check which worker is ready to return complete product 'P' item"""
 
     # May need some more testing to really make sure it always returns the corrent value 
@@ -41,13 +38,15 @@ def assemble_and_retrun_in_belt(current_belt_index, finished_products, workers):
         if belt_items[current_belt_index] == '' and worker.finished_product == 1 and current_belt_index >= worker.belt_position + 3:
            belt_items[current_belt_index] = 'P' # keep the complete product in the belt 
            w = copy.copy(worker)                # Added this tweak to append the complete product in the existing list
-           finished_products.append(w)
            worker.reset()                       # Worker again free to take new component
-           break
-    
+           if w.finished_product == 1:
+            return 1
+       
+    return 0;   
     
     
 def main (): 
+    finished_products = 0      # holds the finished/assembled products
     # Creating 3 pairs of worker's object. TODO: Maybe possible to create in more pythonic way. Can be enhanced in the future
     w1 = Worker()
     w2 = Worker()
@@ -63,13 +62,14 @@ def main ():
     
     print("Items in Belt for first 15 slots:")
     # while i < 100: 
-    while i < 15: # for 100 steps it will be "while i < 100"
+    while i < 100: # for 100 steps it will be "while i < 100"
         component = belt_input[random.randint(0, 2)] # randomly generates A, B,'' at the start of the belt 
         belt_items.append(component)
         if (component != ''):
             total_component_count += 1
-            next_available_worker = find_next_available_worker(workers, component, i) # 
-            assemble_and_retrun_in_belt(i, finished_products, workers)
+            next_available_worker = find_next_available_worker(workers, component, i) #
+        if (component == ''):    
+            finished_products += assemble_and_retrun_in_belt(i, workers)
             
         i += 1
         print(i, component)
@@ -78,8 +78,8 @@ def main ():
     ## TODO: Into improvise the logic so that it also shows the exisitng components with 'P' 
     
        
-    print("Total products returned in belt: ", len(finished_products))
-    print("Without being picked: ", total_component_count - len(finished_products)*2) # each product has two components   
+    print("Total products returned in belt: ", finished_products)
+    print("Without being picked: ", total_component_count - finished_products*2) # each product has two components   
     # for w in workers:
     #     print(w.belt_position, w.hand_one, w.hand_two, w.finished_product)
     print(" ")
@@ -87,8 +87,6 @@ def main ():
     print(belt_items)
     print(" ")
     print("Returned 'P' in slot")
-    for w in finished_products:
-        print(w.belt_position, w.hand_one, w.hand_two) 
     
 
 if __name__ == "__main__":
