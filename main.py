@@ -1,7 +1,6 @@
 """
 Python 3 program to simulate the production line around a single conveyor belt.
 
-copyright: (c) 2020 by Habibul Islam
 """
 
 import random
